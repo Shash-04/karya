@@ -26,5 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Domain layer: `Role`/`TaskStatus`/`TaskType` enums, JPA entities for all five
   tables (UUID keys, JSONB payload/result, auditing timestamps), and Spring Data
   repositories (with `JpaSpecificationExecutor` on tasks for search/filter).
+- Stateless JWT security: `SecurityConfig` (CORS, role rules, JSON 401/403),
+  `JwtService` (HS256 access tokens), `JwtAuthenticationFilter`, BCrypt.
+- Auth API (`/api/v1/auth`): register, login, refresh-token (with rotation),
+  logout, and `me`. Opaque, hashed, rotated refresh tokens.
 
 [Unreleased]: https://github.com/shashwat110/taskforge/commits/main
