@@ -12,9 +12,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-02
+
+Full-stack milestone — Next.js frontend added; the whole stack runs with one command.
+
 ### Added
-- README documentation, Postman collection, and GitHub Actions CI (backend build
-  + tests, Docker build validation).
+- Next.js 16 + TypeScript frontend (`client/`): Redux Toolkit, TanStack Query,
+  axios with a transparent refresh-on-401 interceptor.
+- Auth UI: login/register, route guard (auth + ADMIN), token persistence and
+  bootstrap from `/me`.
+- Dashboard: stat tiles and a task table with search, filter, sort, and pagination.
+- Task create/edit modal and a detail page (info, payload/result JSON, execution
+  log, retry/delete, image/PDF attachment upload + download).
+- Live task updates over WebSocket (STOMP) patching the query cache in real time.
+- Admin views: all tasks, users with task counts, and live queue metrics.
+- Client Dockerfile (Next.js standalone) and a `docker compose` `client` service;
+  full stack (postgres + redis + backend + client) runs via one command.
+- Backend delivery docs: README, Postman collection, and GitHub Actions CI.
 
 ## [0.1.0] - 2026-08-02
 
@@ -59,5 +73,6 @@ Backend milestone — feature-complete, tested, and runnable via Docker.
 - Unit tests (JUnit 5 + Mockito): JWT, refresh-token rotation, auth (register/login),
   task lifecycle (create/update/retry), worker retry logic, and rate limiting.
 
-[Unreleased]: https://github.com/shashwat110/taskforge/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/shashwat110/taskforge/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/shashwat110/taskforge/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/shashwat110/taskforge/releases/tag/v0.1.0
