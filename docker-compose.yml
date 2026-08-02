@@ -1,0 +1,46 @@
+# ─────────────────────────────────────────────────────────────
+# TaskForge — local orchestration
+# Infra (postgres, redis) is defined now so the database/queue can be
+# stood up immediately; the `backend` and `client` services are added
+# as those images become buildable.
+#
+#   docker compose up -d postgres redis     # infra only
+#   docker compose up --build -d            # full stack (once app images exist)
+# ─────────────────────────────────────────────────────────────
+services:
+  postgres:
+    image: postgres:16
+    container_name: taskforge-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-taskforge}
+      POSTGRES_USER: ${POSTGRES_USER:-taskforge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-taskforge} -d ${POSTGRES_DB:-taskforge}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    container_name: taskforge-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redis-data:
