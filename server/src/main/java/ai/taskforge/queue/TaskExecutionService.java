@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,15 +27,18 @@ public class TaskExecutionService {
     private final TaskLogRepository taskLogRepository;
     private final QueueProperties queueProperties;
     private final ObjectMapper objectMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     public TaskExecutionService(TaskRepository taskRepository,
                                 TaskLogRepository taskLogRepository,
                                 QueueProperties queueProperties,
-                                ObjectMapper objectMapper) {
+                                ObjectMapper objectMapper,
+                                ApplicationEventPublisher eventPublisher) {
         this.taskRepository = taskRepository;
         this.taskLogRepository = taskLogRepository;
         this.queueProperties = queueProperties;
         this.objectMapper = objectMapper;
+        this.eventPublisher = eventPublisher;
     }
 
     /**
@@ -53,7 +57,9 @@ public class TaskExecutionService {
         task.setProgress(0);
         task.setErrorMessage(null);
         taskRepository.save(task);
-        writeLog(task, "INFO", "Processing started (attempt " + task.getAttempts() + ")");
+        String startMessage = "Processing started (attempt " + task.getAttempts() + ")";
+        writeLog(task, "INFO", startMessage);
+        publishUpdate(task, startMessage);
         return Optional.of(new TaskContext(task.getId(), task.getType(),
                 parse(task.getPayload()), task.getAttempts()));
     }
@@ -64,6 +70,7 @@ public class TaskExecutionService {
             task.setProgress(percent);
             taskRepository.save(task);
             writeLog(task, "INFO", message);
+            publishUpdate(task, message);
         });
     }
 
@@ -75,6 +82,7 @@ public class TaskExecutionService {
             task.setResult(resultJson);
             taskRepository.save(task);
             writeLog(task, "INFO", "Task completed");
+            publishUpdate(task, "Task completed");
         });
     }
 
@@ -90,14 +98,18 @@ public class TaskExecutionService {
         }
         boolean willRetry = task.getAttempts() < queueProperties.maxAttempts();
         task.setErrorMessage(error);
+        String message;
         if (willRetry) {
             task.setStatus(TaskStatus.PENDING);
-            writeLog(task, "WARN", "Attempt " + task.getAttempts() + " failed: " + error + " — will retry");
+            message = "Attempt " + task.getAttempts() + " failed: " + error + " — will retry";
+            writeLog(task, "WARN", message);
         } else {
             task.setStatus(TaskStatus.FAILED);
-            writeLog(task, "ERROR", "Task failed after " + task.getAttempts() + " attempts: " + error);
+            message = "Task failed after " + task.getAttempts() + " attempts: " + error;
+            writeLog(task, "ERROR", message);
         }
         taskRepository.save(task);
+        publishUpdate(task, message);
         return willRetry;
     }
 
@@ -110,6 +122,12 @@ public class TaskExecutionService {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private void publishUpdate(Task task, String message) {
+        eventPublisher.publishEvent(new TaskUpdatedEvent(
+                task.getUser().getId(), task.getId(), task.getStatus(),
+                task.getProgress(), task.getAttempts(), message));
     }
 
     private void writeLog(Task task, String level, String message) {
