@@ -12,7 +12,9 @@
 *.md.docx
 TaskForge-PRD-*
 
-# ── Java / Spring Boot / Gradle (server/) ──────────────────────
+# ── Java / Spring Boot / Maven / Gradle (server/) ─────────────
+server/target/
+**/target/
 server/build/
 server/.gradle/
 server/out/
