@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { AuthGuard } from "@/components/AuthGuard";
 import { StatCard } from "@/components/StatCard";
+import { TaskFormModal } from "@/components/TaskFormModal";
 import { TaskTable } from "@/components/TaskTable";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -42,6 +43,7 @@ function DashboardContent() {
   const [sortBy, setSortBy] = useState("createdAt");
   const [order, setOrder] = useState<"asc" | "desc">("desc");
   const [page, setPage] = useState(0);
+  const [creating, setCreating] = useState(false);
 
   const debouncedSearch = useDebounce(search);
 
@@ -61,7 +63,11 @@ function DashboardContent() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <Button onClick={() => setCreating(true)}>+ New task</Button>
+      </div>
+      <TaskFormModal open={creating} onClose={() => setCreating(false)} mode="create" />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         <StatCard label="Total" value={s?.total ?? 0} />

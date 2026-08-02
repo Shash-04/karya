@@ -74,4 +74,21 @@ export const taskService = {
     const { data } = await api.post<ApiResponse<Attachment>>(`/tasks/${id}/attachments`, form);
     return data.data;
   },
+  async download(taskId: string, attachmentId: string): Promise<Blob> {
+    const res = await api.get(`/tasks/${taskId}/attachments/${attachmentId}`, {
+      responseType: "blob",
+    });
+    return res.data as Blob;
+  },
 };
+
+/** Fetch an attachment (with auth) and save it to disk in the browser. */
+export async function saveAttachment(taskId: string, attachmentId: string, filename: string) {
+  const blob = await taskService.download(taskId, attachmentId);
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
