@@ -2,6 +2,7 @@ package ai.taskforge;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -16,6 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * {@code @EnableScheduling} drives the queue poller and scheduled-task dispatch.
  */
 @SpringBootApplication
+@ConfigurationPropertiesScan
 @EnableAsync
 @EnableScheduling
 public class TaskForgeApplication {
