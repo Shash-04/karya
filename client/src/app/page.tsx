@@ -1,21 +1,22 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { Spinner } from "@/components/ui/Spinner";
 import { useAppSelector } from "@/store/hooks";
 
 export default function Home() {
-  const { status, user } = useAppSelector((s) => s.auth);
+  const { status } = useAppSelector((s) => s.auth);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated") router.replace("/dashboard");
+    else if (status === "unauthenticated") router.replace("/login");
+  }, [status, router]);
+
   return (
-    <main className="mx-auto max-w-xl p-8">
-      <h1 className="text-3xl font-bold">TaskForge</h1>
-      <p className="mt-2 text-slate-500">Task automation &amp; job processing platform</p>
-      <p className="mt-6 text-sm">
-        Auth status: <span className="font-mono">{status}</span>
-      </p>
-      {user && (
-        <p className="text-sm">
-          Signed in as {user.email} ({user.role})
-        </p>
-      )}
-    </main>
+    <div className="flex flex-1 items-center justify-center py-24">
+      <Spinner className="h-8 w-8" />
+    </div>
   );
 }
