@@ -1,9 +1,8 @@
 # ─────────────────────────────────────────────────────────────
-# TaskForge — local orchestration
-# The `client` service is added once the frontend image is buildable.
+# TaskForge — full-stack orchestration (postgres, redis, backend, client).
 #
 #   docker compose up -d postgres redis     # infra only
-#   docker compose up --build -d            # postgres + redis + backend
+#   docker compose up --build -d            # the whole stack
 # ─────────────────────────────────────────────────────────────
 services:
   postgres:
@@ -74,6 +73,21 @@ services:
       timeout: 5s
       retries: 5
       start_period: 45s
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        # Baked at build time; must be reachable from the browser (host ports).
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080/api/v1}
+        NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL:-ws://localhost:8080/ws}
+    container_name: taskforge-client
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
     restart: unless-stopped
 
 volumes:
