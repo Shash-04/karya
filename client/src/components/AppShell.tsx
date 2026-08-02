@@ -4,11 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useTaskSocket } from "@/hooks/useTaskSocket";
 import { Button } from "./ui/Button";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
+  useTaskSocket();
 
   const navLink = (href: string, label: string) => {
     const active = pathname === href;
