@@ -57,6 +57,11 @@ taskforge:
   queue:
     max-attempts: ${QUEUE_MAX_ATTEMPTS:3}
     retry-delay-ms: ${QUEUE_RETRY_DELAY:5000}
+  ratelimit:
+    auth-limit: ${RATE_LIMIT_AUTH:10}
+    auth-window-seconds: ${RATE_LIMIT_AUTH_WINDOW:60}
+    task-create-limit: ${RATE_LIMIT_TASK_CREATE:30}
+    task-create-window-seconds: ${RATE_LIMIT_TASK_CREATE_WINDOW:60}
   storage:
     upload-path: ${UPLOAD_PATH:./uploads}
     max-file-size: ${MAX_FILE_SIZE:10MB}
