@@ -1,11 +1,9 @@
 # ─────────────────────────────────────────────────────────────
 # TaskForge — local orchestration
-# Infra (postgres, redis) is defined now so the database/queue can be
-# stood up immediately; the `backend` and `client` services are added
-# as those images become buildable.
+# The `client` service is added once the frontend image is buildable.
 #
 #   docker compose up -d postgres redis     # infra only
-#   docker compose up --build -d            # full stack (once app images exist)
+#   docker compose up --build -d            # postgres + redis + backend
 # ─────────────────────────────────────────────────────────────
 services:
   postgres:
@@ -41,6 +39,44 @@ services:
       retries: 5
     restart: unless-stopped
 
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: taskforge-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-taskforge}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-taskforge}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-change_me}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET:-change_me_to_a_long_random_secret_at_least_32_bytes}
+      JWT_ACCESS_EXPIRY: ${JWT_ACCESS_EXPIRY:-900000}
+      JWT_REFRESH_EXPIRY: ${JWT_REFRESH_EXPIRY:-604800000}
+      QUEUE_MAX_ATTEMPTS: ${QUEUE_MAX_ATTEMPTS:-3}
+      QUEUE_RETRY_DELAY: ${QUEUE_RETRY_DELAY:-5000}
+      UPLOAD_PATH: /app/uploads
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+    restart: unless-stopped
+
 volumes:
   pgdata:
   redis-data:
+  uploads:
