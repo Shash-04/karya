@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- README documentation, Postman collection, and GitHub Actions CI (backend build
+  + tests, Docker build validation).
+
+## [0.1.0] - 2026-08-02
+
+Backend milestone — feature-complete, tested, and runnable via Docker.
+
+### Added
 - Root repository hygiene: `.gitignore`, `.env.example`, and this `CHANGELOG.md`.
 - Spring Boot 3.3 backend scaffold under `server/` (Maven, Java 21): dependencies
   for web, security, JPA, Redis, validation, WebSocket, actuator, Flyway, JWT
@@ -51,4 +59,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit tests (JUnit 5 + Mockito): JWT, refresh-token rotation, auth (register/login),
   task lifecycle (create/update/retry), worker retry logic, and rate limiting.
 
-[Unreleased]: https://github.com/shashwat110/taskforge/commits/main
+[Unreleased]: https://github.com/shashwat110/taskforge/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/shashwat110/taskforge/releases/tag/v0.1.0
