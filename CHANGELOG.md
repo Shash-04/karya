@@ -37,5 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   progress reporting; retry-with-backoff and scheduled execution.
 - WebSocket live updates: STOMP endpoint at `/ws` with JWT-authenticated handshake;
   task status/progress broadcast per-user over `/user/queue/tasks` (after commit).
+- File attachments: upload (images/PDF), list, and download task attachments
+  (`/api/v1/tasks/{id}/attachments`), with content-type validation, size limits,
+  path-traversal guards, and owner scoping.
 
 [Unreleased]: https://github.com/shashwat110/taskforge/commits/main
