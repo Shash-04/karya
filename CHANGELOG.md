@@ -30,5 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `JwtService` (HS256 access tokens), `JwtAuthenticationFilter`, BCrypt.
 - Auth API (`/api/v1/auth`): register, login, refresh-token (with rotation),
   logout, and `me`. Opaque, hashed, rotated refresh tokens.
+- Task API (`/api/v1/tasks`): create (202 + enqueue), list (search/filter/sort/
+  paginate), detail-with-logs, update-while-pending, delete, retry, stats summary.
+- Redis queue + async worker: `@Scheduled` poller promotes delayed → ready and
+  drains onto a dedicated worker thread pool; per-type simulated processors with
+  progress reporting; retry-with-backoff and scheduled execution.
 
 [Unreleased]: https://github.com/shashwat110/taskforge/commits/main
