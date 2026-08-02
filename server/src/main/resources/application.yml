@@ -62,6 +62,8 @@ taskforge:
     auth-window-seconds: ${RATE_LIMIT_AUTH_WINDOW:60}
     task-create-limit: ${RATE_LIMIT_TASK_CREATE:30}
     task-create-window-seconds: ${RATE_LIMIT_TASK_CREATE_WINDOW:60}
+  seed:
+    enabled: ${SEED_ENABLED:true}
   storage:
     upload-path: ${UPLOAD_PATH:./uploads}
     max-file-size: ${MAX_FILE_SIZE:10MB}
