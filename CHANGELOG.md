@@ -48,5 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   all statuses; gated by `taskforge.seed.enabled`.
 - Backend Docker image (multi-stage, non-root, health check) and a `docker compose`
   `backend` service wired to postgres + redis; full stack runs with one command.
+- Unit tests (JUnit 5 + Mockito): JWT, refresh-token rotation, auth (register/login),
+  task lifecycle (create/update/retry), worker retry logic, and rate limiting.
 
 [Unreleased]: https://github.com/shashwat110/taskforge/commits/main
