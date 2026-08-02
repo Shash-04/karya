@@ -1,0 +1,14 @@
+# ─────────────────────────────────────────────────────────────
+# docker profile — used when the backend runs inside docker-compose.
+# Hostnames resolve to compose service names (postgres, redis).
+# All values come from the environment (.env); no fallbacks here so a
+# missing secret fails fast rather than starting with a dev default.
+# ─────────────────────────────────────────────────────────────
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/taskforge}
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:redis}
+  jpa:
+    show-sql: false

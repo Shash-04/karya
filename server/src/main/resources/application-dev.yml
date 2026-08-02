@@ -1,0 +1,24 @@
+# ─────────────────────────────────────────────────────────────
+# dev profile — run the app locally against Postgres/Redis that
+# are exposed on localhost (e.g. via `docker compose up postgres redis`).
+# Sensible defaults are provided so the app boots without a full .env.
+# ─────────────────────────────────────────────────────────────
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/taskforge}
+    username: ${SPRING_DATASOURCE_USERNAME:taskforge}
+    password: ${SPRING_DATASOURCE_PASSWORD:change_me}
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+  jpa:
+    show-sql: true
+
+taskforge:
+  jwt:
+    # Dev-only fallback secret (>= 32 bytes for HS256). Never use in production.
+    secret: ${JWT_SECRET:dev-only-secret-change-me-please-32b-minimum!!}
+
+logging:
+  level:
+    ai.taskforge: DEBUG
