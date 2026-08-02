@@ -98,6 +98,25 @@ export interface Attachment {
   createdAt: string;
 }
 
+export interface UserSummary {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  createdAt: string | null;
+  totalTasks: number;
+}
+
+export interface QueueMetrics {
+  readyDepth: number;
+  delayedDepth: number;
+  pending: number;
+  processing: number;
+  completed: number;
+  failed: number;
+  totalTasks: number;
+}
+
 // Live update pushed over WebSocket (/user/queue/tasks).
 export interface TaskUpdate {
   taskId: string;
