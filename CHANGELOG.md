@@ -40,5 +40,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - File attachments: upload (images/PDF), list, and download task attachments
   (`/api/v1/tasks/{id}/attachments`), with content-type validation, size limits,
   path-traversal guards, and owner scoping.
+- Admin views (`/api/v1/admin`, ADMIN-only): all tasks, users with task counts,
+  and platform-wide queue metrics.
+- Rate limiting: Redis fixed-window throttling on auth (per IP) and task creation
+  (per user), returning 429 with `Retry-After`.
+- Startup seeding: idempotent demo accounts (user/admin) and sample tasks across
+  all statuses; gated by `taskforge.seed.enabled`.
+- Backend Docker image (multi-stage, non-root, health check) and a `docker compose`
+  `backend` service wired to postgres + redis; full stack runs with one command.
 
 [Unreleased]: https://github.com/shashwat110/taskforge/commits/main
