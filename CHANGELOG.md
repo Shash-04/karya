@@ -35,5 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Redis queue + async worker: `@Scheduled` poller promotes delayed → ready and
   drains onto a dedicated worker thread pool; per-type simulated processors with
   progress reporting; retry-with-backoff and scheduled execution.
+- WebSocket live updates: STOMP endpoint at `/ws` with JWT-authenticated handshake;
+  task status/progress broadcast per-user over `/user/queue/tasks` (after commit).
 
 [Unreleased]: https://github.com/shashwat110/taskforge/commits/main
