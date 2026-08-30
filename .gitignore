@@ -55,3 +55,6 @@ Thumbs.db
 # ── Docker / local volumes ────────────────────────────────────
 pgdata/
 redis-data/
+
+# Claude Code local config
+.claude/
