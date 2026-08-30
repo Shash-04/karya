@@ -13,11 +13,12 @@ import {
   taskService,
 } from "@/services/taskService";
 
-export function useTasks(params: TaskListParams) {
+export function useTasks(params: TaskListParams, enabled = true) {
   return useQuery({
     queryKey: ["tasks", params],
     queryFn: () => taskService.list(params),
     placeholderData: keepPreviousData,
+    enabled,
   });
 }
 

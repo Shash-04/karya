@@ -2,7 +2,7 @@
 
 import { Client } from "@stomp/stompjs";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { WS_URL } from "@/lib/config";
 import { tokenStore } from "@/lib/tokenStore";
 import type { PageResponse, Task, TaskDetail, TaskUpdate } from "@/lib/types";
@@ -10,9 +10,11 @@ import type { PageResponse, Task, TaskDetail, TaskUpdate } from "@/lib/types";
 /**
  * Subscribes to the current user's live task updates over STOMP and patches the
  * TanStack Query caches so the dashboard and detail views update in real time.
+ * Returns the live connection state for the header status pill.
  */
 export function useTaskSocket() {
   const queryClient = useQueryClient();
+  const [connected, setConnected] = useState(false);
 
   useEffect(() => {
     if (!tokenStore.getAccess()) return;
@@ -26,7 +28,11 @@ export function useTaskSocket() {
       },
     });
 
+    client.onWebSocketClose = () => setConnected(false);
+    client.onDisconnect = () => setConnected(false);
+
     client.onConnect = () => {
+      setConnected(true);
       client.subscribe("/user/queue/tasks", (message) => {
         const update: TaskUpdate = JSON.parse(message.body);
 
@@ -66,7 +72,10 @@ export function useTaskSocket() {
 
     client.activate();
     return () => {
+      setConnected(false);
       void client.deactivate();
     };
   }, [queryClient]);
+
+  return { connected };
 }

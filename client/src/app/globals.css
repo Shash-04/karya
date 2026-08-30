@@ -1,26 +1,76 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Make `dark:` opt-in (class-based) instead of following the OS. The app is a
+   light, warm-neutral design like the reference build, so with no `.dark` on the
+   tree every existing `dark:` utility stays inert and we render light everywhere. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Brand + surfaces (warm neutral base, orange accent) */
+  --color-background: #f7f5f1;
+  --color-surface: #ffffff;
+  --color-surface-2: #fbfaf7;
+  --color-foreground: #1c1917;
+  --color-muted: #78716c;
+  --color-faint: #a8a29e;
+  --color-border: #ebe7e0;
+  --color-border-strong: #ddd8cf;
+
+  --color-brand: #ea580c;
+  --color-brand-hover: #c2410c;
+  --color-brand-soft: #fff1e9;
+  --color-brand-softer: #fef6f1;
+
+  /* Status accents */
+  --color-status-pending: #d97706;
+  --color-status-processing: #2563eb;
+  --color-status-completed: #16a34a;
+  --color-status-failed: #dc2626;
+  --color-status-queued: #7c3aed;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  --radius-xl2: 1rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--color-background);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Terminal / code surfaces used on the landing hero, telemetry and log screens. */
+.tf-terminal {
+  background: #0c0a09;
+  color: #e7e5e4;
+  font-family: var(--font-mono);
+}
+
+/* Thin custom scrollbar for dark panels */
+.tf-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.tf-scroll::-webkit-scrollbar-thumb {
+  background: rgba(120, 113, 108, 0.4);
+  border-radius: 9999px;
+}
+
+@keyframes tf-pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.tf-live-dot {
+  animation: tf-pulse-dot 1.4s ease-in-out infinite;
 }
