@@ -98,6 +98,9 @@ public class TaskExecutionService {
         }
         boolean willRetry = task.getAttempts() < queueProperties.maxAttempts();
         task.setErrorMessage(error);
+        // A failed attempt produced no durable result; don't leave a stale progress
+        // value (e.g. a processor that failed mid-way) showing on the bar.
+        task.setProgress(0);
         String message;
         if (willRetry) {
             task.setStatus(TaskStatus.PENDING);

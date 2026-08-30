@@ -89,7 +89,10 @@ public class DataSeeder implements ApplicationRunner {
         // Another success, staggered so progress bars advance at different times.
         plan.add(seedTask(user, "Resize avatar", TaskType.IMAGE_PROCESSING, 6, null, null, 4_000));
 
-        plan.add(seedTask(user, "Notify partner webhook", TaskType.WEBHOOK, 4, null, null, 2_000));
+        // A genuinely real job: this one performs an actual HTTP POST and succeeds
+        // only on a 2xx response from the live endpoint.
+        plan.add(seedTask(user, "Notify partner webhook", TaskType.WEBHOOK, 4,
+                "{\"url\":\"https://httpbin.org/post\",\"event\":\"demo.seeded\"}", null, 2_000));
 
         // A genuinely scheduled job: sits in the delayed set until it is due.
         Instant runAt = Instant.now().plus(1, ChronoUnit.HOURS);

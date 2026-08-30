@@ -1,7 +1,7 @@
-// Frontend-only presentation helpers. The backend enums stay as-is
-// (see server TaskType / integer priority); here we map them to the
-// reference build's visual language — mono type tokens, P1–P4 priority
-// badges, and colored status pills — without changing any API contract.
+// Frontend-only presentation helpers. Type labels mirror the backend
+// TaskType enum verbatim so the UI names match what the worker actually
+// runs; this layer only adds visual tokens — colored type/status pills
+// and P1–P4 priority badges — without changing any API contract.
 
 import type { TaskStatus, TaskType } from "./types";
 
@@ -17,7 +17,7 @@ export interface Meta {
 
 const TYPE_META: Record<TaskType, Meta> = {
   IMAGE_PROCESSING: {
-    label: "FILE_PROCESSING",
+    label: "IMAGE_PROCESSING",
     color: "text-sky-600",
     pill: "bg-sky-50 text-sky-700",
     dot: "#0284c7",
@@ -29,25 +29,25 @@ const TYPE_META: Record<TaskType, Meta> = {
     dot: "#7c3aed",
   },
   REPORT: {
-    label: "REPORT_GENERATION",
+    label: "REPORT",
     color: "text-amber-600",
     pill: "bg-amber-50 text-amber-700",
     dot: "#d97706",
   },
   WEBHOOK: {
-    label: "WEB_SCRAPE",
+    label: "WEBHOOK",
     color: "text-emerald-600",
     pill: "bg-emerald-50 text-emerald-700",
     dot: "#059669",
   },
   EMAIL: {
-    label: "NOTIFICATION_DISPATCH",
+    label: "EMAIL",
     color: "text-rose-600",
     pill: "bg-rose-50 text-rose-700",
     dot: "#e11d48",
   },
   GENERIC: {
-    label: "GENERIC_WORKER",
+    label: "GENERIC",
     color: "text-stone-600",
     pill: "bg-stone-100 text-stone-700",
     dot: "#78716c",

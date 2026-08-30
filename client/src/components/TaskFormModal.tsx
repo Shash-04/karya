@@ -22,6 +22,18 @@ const PRIORITIES = [
   { value: 4, label: "P4 - Critical" },
 ];
 
+const FALLBACK_PAYLOAD = '{\n  "source": "api_upload"\n}';
+
+const DEFAULT_PAYLOADS: Partial<Record<TaskType, string>> = {
+  WEBHOOK: '{\n  "url": "https://httpbin.org/status/500"\n}',
+};
+
+function defaultPayloadFor(type: TaskType): string {
+  return DEFAULT_PAYLOADS[type] ?? FALLBACK_PAYLOAD;
+}
+
+const KNOWN_DEFAULTS = new Set([FALLBACK_PAYLOAD, ...Object.values(DEFAULT_PAYLOADS)]);
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -34,12 +46,23 @@ export function TaskFormModal({ open, onClose, mode, task }: Props) {
   const update = useUpdateTask();
 
   const [name, setName] = useState(task?.name ?? "");
-  const [type, setType] = useState<TaskType>(task?.type ?? "IMAGE_PROCESSING");
+  const [type, setType] = useState<TaskType>(task?.type ?? "WEBHOOK");
   const [priority, setPriority] = useState(task?.priority || 1);
   const [description, setDescription] = useState(task?.description ?? "");
   const [payload, setPayload] = useState(
-    task?.payload ? JSON.stringify(task.payload, null, 2) : '{\n  "source": "api_upload"\n}'
+    task?.payload
+      ? JSON.stringify(task.payload, null, 2)
+      : defaultPayloadFor(task?.type ?? "WEBHOOK")
   );
+
+  // Swap the starter payload when the type changes, but only if the user hasn't
+  // typed their own — i.e. it's still blank or one of the known defaults.
+  function handleTypeChange(next: TaskType) {
+    setPayload((current) =>
+      current.trim() === "" || KNOWN_DEFAULTS.has(current) ? defaultPayloadFor(next) : current
+    );
+    setType(next);
+  }
   const [scheduledAt, setScheduledAt] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -124,7 +147,7 @@ export function TaskFormModal({ open, onClose, mode, task }: Props) {
               className={fieldClass}
               value={type}
               disabled={mode === "edit"}
-              onChange={(e) => setType(e.target.value as TaskType)}
+              onChange={(e) => handleTypeChange(e.target.value as TaskType)}
             >
               {TASK_TYPES.map((t) => (
                 <option key={t} value={t}>
