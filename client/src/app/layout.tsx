@@ -7,9 +7,9 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "TaskForge | Task Automation & Job Processing Engine",
+  title: "Karya | Async Job Processing Engine",
   description:
-    "Distributed job processing platform — background queues, scheduled tasks, and live WebSocket telemetry.",
+    "A Redis-backed job queue with a concurrent worker pool, automatic retries, delayed scheduling, and live WebSocket task updates.",
 };
 
 export default function RootLayout({
