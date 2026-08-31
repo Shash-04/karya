@@ -4,15 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Activity,
+  Cpu,
   Database,
+  Layers,
   LayoutDashboard,
   ListChecks,
-  ScrollText,
   Server,
   Settings2,
   Users,
   Zap,
 } from "lucide-react";
+import { useSystemTelemetry } from "@/hooks/useSystem";
 import type { Role } from "@/lib/types";
 
 interface NavItem {
@@ -26,8 +28,7 @@ interface NavItem {
 const NAV: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/queue", label: "Task Queue", icon: ListChecks, live: true },
-  { href: "/telemetry", label: "BullMQ Telemetry", icon: Activity },
-  { href: "/logs", label: "Task Logs", icon: ScrollText },
+  { href: "/telemetry", label: "Telemetry", icon: Activity },
   { href: "/config", label: "System Config", icon: Settings2 },
   { href: "/admin", label: "Users", icon: Users, adminOnly: true },
 ];
@@ -88,35 +89,65 @@ export function Sidebar({ role, onNavigate }: { role?: Role; onNavigate?: () => 
         </ul>
       </nav>
 
-      {/* Worker pool status widget */}
-      <div className="border-t border-border p-3">
-        <div className="rounded-xl border border-border bg-surface-2 p-3">
-          <div className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
-            <Server className="h-3.5 w-3.5" />
-            Worker Pool Status
-          </div>
-          <dl className="space-y-1.5 text-xs">
-            <div className="flex items-center justify-between">
-              <dt className="flex items-center gap-1.5 text-faint">
-                <Zap className="h-3 w-3" /> Queue
-              </dt>
-              <dd className="font-medium text-emerald-600">Active (5 workers)</dd>
-            </div>
-            <div className="flex items-center justify-between">
-              <dt className="flex items-center gap-1.5 text-faint">
-                <Database className="h-3 w-3" /> Redis Host
-              </dt>
-              <dd className="font-mono text-foreground">localhost:6379</dd>
-            </div>
-            <div className="flex items-center justify-between">
-              <dt className="flex items-center gap-1.5 text-faint">
-                <Database className="h-3 w-3" /> Postgres
-              </dt>
-              <dd className="font-medium text-foreground">Spring JPA</dd>
-            </div>
-          </dl>
+      {/* Worker pool status widget — live from /system/telemetry */}
+      <WorkerPoolStatus />
+    </div>
+  );
+}
+
+function WorkerPoolStatus() {
+  const { data } = useSystemTelemetry();
+  const workersActive = data ? `${data.workerPool.activeCount} / ${data.workerPool.maxPoolSize}` : "—";
+  const queueDepth = data ? data.queue.readyDepth + data.queue.delayedDepth : null;
+  const redisUp = data?.redis.available;
+  const dbUp = data?.database.available;
+
+  return (
+    <div className="border-t border-border p-3">
+      <div className="rounded-xl border border-border bg-surface-2 p-3">
+        <div className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
+          <Server className="h-3.5 w-3.5" />
+          Worker Pool Status
         </div>
+        <dl className="space-y-1.5 text-xs">
+          <div className="flex items-center justify-between">
+            <dt className="flex items-center gap-1.5 text-faint">
+              <Cpu className="h-3 w-3" /> Workers
+            </dt>
+            <dd className="font-mono font-medium text-foreground">{workersActive}</dd>
+          </div>
+          <div className="flex items-center justify-between">
+            <dt className="flex items-center gap-1.5 text-faint">
+              <Layers className="h-3 w-3" /> Queue Depth
+            </dt>
+            <dd className="font-mono font-medium text-foreground">
+              {queueDepth == null ? "—" : queueDepth}
+            </dd>
+          </div>
+          <div className="flex items-center justify-between">
+            <dt className="flex items-center gap-1.5 text-faint">
+              <Database className="h-3 w-3" /> Redis
+            </dt>
+            <dd className={`font-medium ${statusTone(redisUp)}`}>{statusLabel(redisUp)}</dd>
+          </div>
+          <div className="flex items-center justify-between">
+            <dt className="flex items-center gap-1.5 text-faint">
+              <Database className="h-3 w-3" /> Postgres
+            </dt>
+            <dd className={`font-medium ${statusTone(dbUp)}`}>{statusLabel(dbUp)}</dd>
+          </div>
+        </dl>
       </div>
     </div>
   );
+}
+
+function statusLabel(up: boolean | undefined): string {
+  if (up == null) return "—";
+  return up ? "Online" : "Offline";
+}
+
+function statusTone(up: boolean | undefined): string {
+  if (up == null) return "text-faint";
+  return up ? "text-emerald-600" : "text-red-500";
 }
