@@ -1,4 +1,4 @@
-# TaskForge
+# Karya
 
 **Task automation & job processing platform.** Users create tasks; each task is
 persisted, pushed onto a Redis queue, and processed asynchronously by a background
@@ -86,7 +86,7 @@ the owning user over WebSocket.
 ## Folder structure
 
 ```
-taskforge/
+karya/
 ├── docker-compose.yml         # postgres + redis + backend
 ├── .env.example
 ├── CHANGELOG.md
@@ -118,8 +118,8 @@ taskforge/
 ### Run everything with Docker
 
 ```bash
-git clone <repo-url> taskforge
-cd taskforge
+git clone <repo-url> karya
+cd karya
 cp .env.example .env         # adjust secrets as needed
 docker compose up --build -d
 ```
