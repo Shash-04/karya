@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
-import { Cpu, Link2, Lock, Mail } from "lucide-react";
+import { FormEvent, useRef, useState } from "react";
+import { Cpu, Link2, Lock, Mail, Moon, X } from "lucide-react";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -21,15 +21,35 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  // The backend runs on a free tier that sleeps when idle; the first request
+  // wakes it (a ~15s cold start). If a login is taking a while, tell the user
+  // that's what's happening instead of leaving them staring at a spinner.
+  const [waking, setWaking] = useState(false);
+  const [wakingDismissed, setWakingDismissed] = useState(false);
+  const wakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function clearWakeTimer() {
+    if (wakeTimer.current) {
+      clearTimeout(wakeTimer.current);
+      wakeTimer.current = null;
+    }
+  }
 
   async function submit(mail: string, pass: string) {
     setLoading(true);
     setError(null);
+    setWaking(false);
+    setWakingDismissed(false);
+    clearWakeTimer();
+    wakeTimer.current = setTimeout(() => setWaking(true), 3000);
     try {
       await login(mail, pass);
     } catch (err) {
       setError(getErrorMessage(err, "Invalid email or password"));
       setLoading(false);
+    } finally {
+      clearWakeTimer();
+      setWaking(false);
     }
   }
 
@@ -58,6 +78,26 @@ export default function LoginPage() {
         </div>
 
         <div className="rounded-xl2 border border-border bg-surface p-6 shadow-sm shadow-stone-900/[0.03]">
+          {waking && !wakingDismissed && (
+            <div className="mb-4 flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-3 text-sm text-amber-800">
+              <Moon className="mt-0.5 h-4 w-4 shrink-0" />
+              <div className="flex-1">
+                <p className="font-semibold">Waking the server up…</p>
+                <p className="mt-0.5 text-[13px] text-amber-700">
+                  The backend sleeps when idle on its free tier. The first request can take
+                  ~15 seconds — hang tight, this only happens once.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setWakingDismissed(true)}
+                className="rounded p-0.5 text-amber-600 transition-colors hover:bg-amber-100 hover:text-amber-800"
+                aria-label="Dismiss"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
           <form onSubmit={onSubmit} className="space-y-4">
             {error && <Alert>{error}</Alert>}
             <Field label="Email Address" icon={<Mail className="h-4 w-4" />}>
