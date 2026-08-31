@@ -26,7 +26,10 @@ public class TaskQueuePoller {
         this.worker = worker;
     }
 
-    @Scheduled(fixedDelay = 1000)
+    // Interval between queue ticks. Kept high (30s default) to stay well within
+    // managed-Redis command budgets (e.g. Upstash free tier); override via
+    // taskforge.queue.poll-interval-ms without a rebuild.
+    @Scheduled(fixedDelayString = "${taskforge.queue.poll-interval-ms:30000}")
     public void poll() {
         promoteDue();
         drainReady();

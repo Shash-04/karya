@@ -26,4 +26,8 @@ USER appuser
 EXPOSE 8080
 HEALTHCHECK --interval=15s --timeout=5s --start-period=45s --retries=5 \
     CMD curl -f http://localhost:8080/actuator/health || exit 1
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+# Cap heap to a share of the container limit so the JVM fits Render's free
+# 512MB instance instead of sizing to the host and getting OOM-killed.
+# Override JAVA_OPTS at deploy time for larger instances.
+ENV JAVA_OPTS="-XX:MaxRAMPercentage=70.0 -XX:+UseSerialGC"
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]

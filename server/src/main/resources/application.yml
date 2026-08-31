@@ -36,6 +36,10 @@ spring:
       host: ${SPRING_DATA_REDIS_HOST}
       port: ${SPRING_DATA_REDIS_PORT:6379}
       password: ${SPRING_DATA_REDIS_PASSWORD:}
+      # TLS off for local/docker Redis; set true for managed providers
+      # that require it (Upstash, Redis Cloud) via SPRING_DATA_REDIS_SSL_ENABLED.
+      ssl:
+        enabled: ${SPRING_DATA_REDIS_SSL_ENABLED:false}
 
   servlet:
     multipart:
@@ -57,6 +61,7 @@ taskforge:
   queue:
     max-attempts: ${QUEUE_MAX_ATTEMPTS:3}
     retry-delay-ms: ${QUEUE_RETRY_DELAY:5000}
+    poll-interval-ms: ${QUEUE_POLL_INTERVAL:30000}   # queue tick cadence
   ratelimit:
     auth-limit: ${RATE_LIMIT_AUTH:10}
     auth-window-seconds: ${RATE_LIMIT_AUTH_WINDOW:60}
