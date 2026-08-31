@@ -71,7 +71,7 @@ export default function LoginPage() {
           <span className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-brand text-white shadow-lg shadow-brand/30">
             <Cpu className="h-7 w-7" />
           </span>
-          <h1 className="text-2xl font-bold tracking-tight">Welcome back to TaskForge</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Welcome back to Karya</h1>
           <p className="mt-1 text-sm text-muted">
             Sign in to access your asynchronous job queue &amp; real-time telemetry
           </p>
@@ -124,7 +124,7 @@ export default function LoginPage() {
             </Field>
             <Button type="submit" disabled={loading} className="w-full">
               {loading && <Spinner className="h-4 w-4 text-white" />}
-              Sign In to TaskForge
+              Sign In to Karya
             </Button>
           </form>
 

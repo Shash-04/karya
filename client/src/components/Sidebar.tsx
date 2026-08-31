@@ -45,7 +45,7 @@ export function Sidebar({ role, onNavigate }: { role?: Role; onNavigate?: () => 
         </span>
         <div className="leading-tight">
           <div className="flex items-center gap-1.5">
-            <span className="text-base font-bold tracking-tight">TaskForge</span>
+            <span className="text-base font-bold tracking-tight">Karya</span>
             <span className="rounded bg-brand-soft px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-brand">
               Pro
             </span>
