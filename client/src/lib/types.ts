@@ -117,6 +117,61 @@ export interface QueueMetrics {
   totalTasks: number;
 }
 
+// Effective, non-sensitive configuration (GET /system/config).
+export interface SystemConfig {
+  worker: { corePoolSize: number; maxPoolSize: number; queueCapacity: number };
+  queue: { maxAttempts: number; retryDelayMs: number; pollIntervalMs: number };
+  rateLimit: {
+    authLimit: number;
+    authWindowSeconds: number;
+    taskCreateLimit: number;
+    taskCreateWindowSeconds: number;
+  };
+  jwt: { accessExpiryMs: number; refreshExpiryMs: number };
+  storage: { maxFileSize: string; uploadPath: string };
+  activeProfiles: string[];
+  corsAllowedOrigins: string[];
+}
+
+// Live runtime telemetry (GET /system/telemetry).
+export interface SystemTelemetry {
+  workerPool: {
+    corePoolSize: number;
+    maxPoolSize: number;
+    queueCapacity: number;
+    activeCount: number;
+    poolSize: number;
+    queuedTasks: number;
+    completedTasks: number;
+  };
+  queue: { readyDepth: number; delayedDepth: number };
+  tasks: { pending: number; processing: number; completed: number; failed: number; total: number };
+  redis: {
+    available: boolean;
+    version: string | null;
+    usedMemoryBytes: number | null;
+    usedMemoryHuman: string | null;
+    connectedClients: number | null;
+    opsPerSec: number | null;
+    maxMemoryPolicy: string | null;
+    aofEnabled: boolean | null;
+  };
+  jvm: {
+    heapUsedBytes: number;
+    heapMaxBytes: number;
+    cpuUsagePercent: number;
+    uptimeMs: number;
+    availableProcessors: number;
+  };
+  database: {
+    available: boolean;
+    activeConnections: number | null;
+    idleConnections: number | null;
+    totalConnections: number | null;
+    maxPoolSize: number | null;
+  };
+}
+
 // Live update pushed over WebSocket (/user/queue/tasks).
 export interface TaskUpdate {
   taskId: string;
