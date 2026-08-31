@@ -5,7 +5,6 @@ import {
   CheckCircle2,
   Cpu,
   Database,
-  Gauge,
   HardDrive,
   Layers,
   Zap,
@@ -58,18 +57,10 @@ function TelemetryContent() {
       <PageHeader
         kicker={<LiveKicker label="Live Telemetry Stream" />}
         title="Queue &amp; Runtime Telemetry"
-        subtitle="Worker-pool concurrency, queue depth, and live Redis / JVM engine metrics."
-        actions={
-          <span className="rounded-lg border border-border-strong bg-surface px-3 py-2 text-xs font-medium text-muted">
-            Redis:{" "}
-            <span className="font-mono text-foreground">
-              {data?.redis.available ? `v${data.redis.version ?? "?"}` : "offline"}
-            </span>
-          </span>
-        }
+        subtitle="Worker-pool concurrency, queue depth, and live JVM runtime metrics."
       />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Metric
           label="Job Success Rate"
           value={data ? `${successRate(data)}%` : loadingText(isLoading)}
@@ -89,12 +80,6 @@ function TelemetryContent() {
           hint={data ? `${data.workerPool.poolSize} threads in pool` : " "}
           icon={<Cpu className="h-4 w-4" />}
           tone="text-brand"
-        />
-        <Metric
-          label="Redis Ops / sec"
-          value={data ? (data.redis.opsPerSec != null ? String(data.redis.opsPerSec) : "—") : loadingText(isLoading)}
-          hint="Instantaneous throughput"
-          icon={<Gauge className="h-4 w-4" />}
         />
       </div>
 
@@ -136,43 +121,6 @@ function TelemetryContent() {
                 <MiniStat label="Queue Capacity" value={String(data.workerPool.queueCapacity)} />
               </div>
             </>
-          ) : (
-            <Skeleton />
-          )}
-        </Card>
-
-        <Card className="p-5">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-bold">
-              <Database className="h-4 w-4 text-brand" /> Redis Engine
-            </h2>
-            <span
-              className={`text-[10px] font-bold uppercase tracking-wide ${
-                data?.redis.available ? "text-emerald-600" : "text-red-500"
-              }`}
-            >
-              {data ? (data.redis.available ? `v${data.redis.version ?? "?"}` : "Offline") : ""}
-            </span>
-          </div>
-          {data ? (
-            data.redis.available ? (
-              <div className="grid grid-cols-2 gap-3">
-                <MiniStat label="Used Memory" value={data.redis.usedMemoryHuman ?? formatBytes(data.redis.usedMemoryBytes)} />
-                <MiniStat label="Connected Clients" value={String(data.redis.connectedClients ?? "—")} />
-                <MiniStat
-                  label="Eviction Policy"
-                  value={data.redis.maxMemoryPolicy ?? "—"}
-                  mono
-                />
-                <MiniStat
-                  label="AOF Persistence"
-                  value={data.redis.aofEnabled == null ? "—" : data.redis.aofEnabled ? "ON" : "OFF"}
-                  tone={data.redis.aofEnabled ? "text-emerald-600" : "text-foreground"}
-                />
-              </div>
-            ) : (
-              <p className="py-6 text-center text-sm text-muted">Redis is not reachable.</p>
-            )
           ) : (
             <Skeleton />
           )}

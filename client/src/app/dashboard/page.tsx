@@ -62,7 +62,7 @@ function DashboardContent() {
   return (
     <div>
       <PageHeader
-        kicker={<LiveKicker label="BullMQ Async Queue Engine" />}
+        kicker={<LiveKicker label="Async Queue Engine" />}
         title="Task Automation Dashboard"
         subtitle="Live queue execution metrics, worker concurrency, and automated task logs."
         actions={
