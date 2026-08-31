@@ -64,6 +64,12 @@ public class DataSeeder implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
+        // Self-heal: earlier seed runs (or a manual registration) may have created the
+        // demo admin with the wrong role. Reconcile it every boot so the RBAC demo works
+        // on existing databases without a manual SQL fix — this runs even when the full
+        // seed below is skipped. (Users must re-login to pick up the role in a fresh JWT.)
+        reconcileAdminRole();
+
         if (userRepository.existsByEmail(DEMO_USER_EMAIL)) {
             log.info("Seed data already present; skipping.");
             return;
@@ -101,6 +107,18 @@ public class DataSeeder implements ApplicationRunner {
         enqueueAfterCommit(plan);
         log.info("Seeded demo accounts ({}, {}) and {} live sample tasks.",
                 DEMO_USER_EMAIL, DEMO_ADMIN_EMAIL, plan.size());
+    }
+
+    /** Ensures the demo admin account, if present, actually holds ROLE_ADMIN. */
+    private void reconcileAdminRole() {
+        userRepository.findByEmail(DEMO_ADMIN_EMAIL).ifPresent(admin -> {
+            if (admin.getRole() != Role.ADMIN) {
+                log.warn("Demo admin {} had role {}; promoting to ADMIN.",
+                        DEMO_ADMIN_EMAIL, admin.getRole());
+                admin.setRole(Role.ADMIN);
+                userRepository.save(admin);
+            }
+        });
     }
 
     private User createUser(String name, String email, String rawPassword, Role role) {
